@@ -1,6 +1,7 @@
 var request = require("request");
 var fs = require("fs");
 var url = require("url");
+var async = require("async");
 
 var HOST = "localhost"
 var PROTOCOL = "http"
@@ -19,30 +20,40 @@ var files = {
 
 console.log(files);
 
-var upload_url = url.format({
+var upload_firmware_url = url.format({
     protocol: PROTOCOL,
     host: HOST,
     pathname: "/api/firmware"
   })
 
 var upload_options = {
-  url: upload_url,
+  url: upload_firmware_url,
   headers: {
     "api-key": APIKEY
   },
-  formData: {
-    data: fs.createReadStream(file)
-  }
+  formData: {}
 }
 
-request.post(upload_options, function optionalCallback(err, httpResponse, body) {
-  if (err) {
-    return console.error('upload failed:', err);
-  }
-  body = JSON.parse(body);
-  console.log('Upload successful!  Server responded with:', body.parseUrl.path);
-});
+var uploaded_url = {};
 
+async.forEachOf(files, function(value, key, callback) {
+  upload_options.formData = {
+    data: fs.createReadStream(value)
+  }
+  request.post(upload_options, function optionalCallback(err, httpResponse, body) {
+    if (err) {
+      return callback(err);
+    }
+    body = JSON.parse(body);
+    uploaded_url[key] = body.parseUrl.path;
+    callback();
+  });
+}, function(err) {
+  if (err) console.error(err.message);
+  console.log(uploaded_url);
+})
+
+/*
 var firmware_options = {
   url: "http://localhost/api/"+APPLICATION+"/versions",
   headers: {
@@ -68,3 +79,4 @@ request.post(firmware_options, function optionalCallback(err, httpResponse, body
   }
   console.log('Upload successful!  Server responded with:', body);
 });
+*/
