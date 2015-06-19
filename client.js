@@ -6,7 +6,7 @@ var async = require("async");
 var HOST = "localhost"
 var PROTOCOL = "http"
 
-var VERSION = "1.100.100";
+var VERSION = "0.100.101";
 var APPLICATION = "otaupdate";
 var APIKEY = "db396724456fa1ece579b134e00c05d0d851431aff0decad4852e2bf48a8ad64"
 
@@ -18,8 +18,7 @@ var files = {
   image2: __dirname + IMAGE2
 }
 
-console.log(files);
-
+// for uploading firmware files
 var upload_firmware_url = url.format({
     protocol: PROTOCOL,
     host: HOST,
@@ -34,7 +33,23 @@ var upload_options = {
   formData: {}
 }
 
-var uploaded_url = {};
+// for registering new version
+var register_version_url = url.format({
+    protocol: PROTOCOL,
+    host: HOST,
+    pathname: "/api/"+APPLICATION+"/versions"
+  })
+
+var register_version_options = {
+  url: register_version_url,
+  headers: {
+    "api-key": APIKEY,
+    "Content-Type": "application/json"
+  },
+
+}
+
+var uploaded_url = [];
 
 async.forEachOf(files, function(value, key, callback) {
   upload_options.formData = {
@@ -45,38 +60,33 @@ async.forEachOf(files, function(value, key, callback) {
       return callback(err);
     }
     body = JSON.parse(body);
-    uploaded_url[key] = body.parseUrl.path;
+    uploaded_url.push({
+      name: key,
+      url: url.format({
+        protocol: PROTOCOL,
+        host: HOST,
+        pathname: body.parseUrl.path
+      })
+    })
+    // console.log(body)
     callback();
   });
 }, function(err) {
   if (err) console.error(err.message);
-  console.log(uploaded_url);
+  register_version(uploaded_url);
 })
 
-/*
-var firmware_options = {
-  url: "http://localhost/api/"+APPLICATION+"/versions",
-  headers: {
-    "api-key": APIKEY,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
+function register_version(firmware_urls) {
+  // console.log(firmware_urls);
+  register_version_options.body = JSON.stringify({
     "version": VERSION,
-    "firmwares": [{
-        "name": "image1",
-        "url": "http://localhost:3000/firmwares/5572bd3797accd181656e4c7/download"
-    },
-    {
-        "name": "image2",
-        "url": "http://localhost:3000/firmwares/5572bd3897accd181656e4c8/download"
-    }]    
-  })
+    "firmwares": firmware_urls
+  });
+  request.post(register_version_options, function optionalCallback(err, httpResponse, body) {
+    if (err) {
+      return console.error('upload firmware data failed:', err);
+    }
+    console.log('Register application ' + APPLICATION + ', version ' + VERSION +' successful!');
+    console.log(body);
+  });
 }
-
-request.post(firmware_options, function optionalCallback(err, httpResponse, body) {
-  if (err) {
-    return console.error('upload firmware data failed:', err);
-  }
-  console.log('Upload successful!  Server responded with:', body);
-});
-*/
