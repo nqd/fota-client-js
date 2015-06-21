@@ -3,7 +3,7 @@ var fs = require("fs");
 var url = require("url");
 var async = require("async");
 
-var HOST = "localhost"
+var HOST = "192.168.1.163"
 var PROTOCOL = "http"
 
 var VERSION = "0.100.101";
