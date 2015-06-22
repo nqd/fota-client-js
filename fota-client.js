@@ -96,8 +96,9 @@ function register_version(firmware_urls) {
       return console.error('Register failed:', err);
     }
     if (httpResponse.statusCode != 201) {
-      return console.error("Failed to register new version, make sure you did create new application!")
+      return console.error("Failed to register new version, make sure you did create new application!");
     }
     console.log('Register application ' + argv.application + ', version ' + argv.version +' successful!');
+    console.log('Done!');
   });
 }
