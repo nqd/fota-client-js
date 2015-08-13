@@ -6,9 +6,9 @@ var url = require("url");
 var async = require("async");
 var argv = require('minimist')(process.argv.slice(2));
 
-var HOST = "192.168.1.163"
+var HOST = "103.253.146.183"
 var PROTOCOL = "http"
-var APIKEY = "db396724456fa1ece579b134e00c05d0d851431aff0decad4852e2bf48a8ad64"
+var APIKEY = "yourkey"
 
 /* checking input */
 if (!(argv.version && argv.i1 && argv.i2 && argv.application)) {
