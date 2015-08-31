@@ -1,2 +1,3 @@
 *.bin
+.fotaclient-config.json
 node_modules/
