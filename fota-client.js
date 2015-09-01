@@ -6,10 +6,6 @@ var async = require("async");
 var argv = require('minimist')(process.argv.slice(2));
 var fs = require('fs');
 
-// default host is my server at http://103.253.146.183/
-var HOST_DEFAULT = "103.253.146.183";
-var PROTOCOL_DEFAULT = "http";
-
 /* checking input */
 if (!(argv.version && argv.i1 && argv.i2 && argv.application)) {
   console.error('Fail. Need to provide version, image 1 path, and image 2 path');
@@ -17,7 +13,8 @@ if (!(argv.version && argv.i1 && argv.i2 && argv.application)) {
 }
 
 /* read configuration */
-var config_file = (argv.fotaclient_config)? (argv.fotaclient_config): (process.env.HOME+"/.fotaclient-config.json");
+var config_file = (argv.config)? (argv.config): (process.env.HOME+"/.fotaclient-config.json");
+var config_profile = (argv.profile)? (argv.profile): "DEMO";
 
 if (!fs.existsSync(config_file)) {
   console.log('Fail. Check the config file at ', config_file);
@@ -38,10 +35,9 @@ try {
   console.log('Fail. Configuration file ' + config_file + ' is not a JSON');
   return;
 }
-
-var HOST = config.HOST || HOST_DEFAULT;
-var PROTOCOL = config.PROTOCOL || PROTOCOL_DEFAULT;
-var APIKEY = config.APIKEY;
+var HOST = config[config_profile].HOST;
+var PROTOCOL = config[config_profile].PROTOCOL;
+var APIKEY = config[config_profile].APIKEY;
 
 /* prepare 2 images for ESP */
 var files = {

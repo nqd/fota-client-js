@@ -1,5 +1,12 @@
 {
-  "HOST": "103.253.146.183",
-  "PROTOCOL": "http",
-  "APIKEY": "mykey"
+  "DEMO": {
+    "HOST": "103.253.146.183",
+    "PROTOCOL": "http",
+    "APIKEY": "mykey"
+  }, 
+  "LOCAL": {
+    "HOST": "myip",
+    "PROTOCOL": "http",
+    "APIKEY": "mykey"
+  }
 }
